@@ -2,44 +2,34 @@ package guru.qa.niffler.test;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.jupiter.annotation.Spend;
+import guru.qa.niffler.jupiter.annotation.GenerateCategory;
+import guru.qa.niffler.jupiter.annotation.GenerateSpend;
+import guru.qa.niffler.jupiter.extension.CategoryExtension;
 import guru.qa.niffler.jupiter.extension.SpendExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
-import org.junit.jupiter.api.BeforeEach;
+import guru.qa.niffler.po.LoginPage;
+import guru.qa.niffler.po.MainPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 @ExtendWith(SpendExtension.class)
+@ExtendWith(CategoryExtension.class)
 public class SpendingTest {
 
     static {
-        Configuration.browserSize = "1920x1080";
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--incognito", "start-maximized");
+        Configuration.browserCapabilities = options;
     }
 
-    @BeforeEach
-    void doLogin() {
-        // createSpend
-        Selenide.open("http://127.0.0.1:3000/");
-        $("a[href*='redirect']").click();
-        $("input[name='username']").setValue("dima");
-        $("input[name='password']").setValue("12345");
-        $("button[type='submit']").click();
-    }
+    @GenerateCategory(
+            username = "dima",
+            category = "Обучение"
+    )
 
-    @Test
-    void anotherTest() {
-        Selenide.open("http://127.0.0.1:3000/");
-        $("a[href*='redirect']").should(visible);
-    }
-
-    @Spend(
+    @GenerateSpend(
             username = "dima",
             description = "QA.GURU Advanced 5",
             amount = 65000.00,
@@ -48,14 +38,15 @@ public class SpendingTest {
     )
     @Test
     void spendingShouldBeDeletedAfterTableAction(SpendJson spendJson) {
-        SelenideElement rowWithSpending = $(".spendings-table tbody")
-                .$$("tr")
-                .find(text(spendJson.description()));
-
-        rowWithSpending.$$("td").first().click();
-        $(".spendings__bulk-actions button").click();
-
-        $(".spendings-table tbody").$$("tr")
-                .shouldHave(size(0));
+        Selenide.open("http://127.0.0.1:3000/");
+        MainPage mainPage = new MainPage();
+        mainPage.clickLoginButton();
+        LoginPage loginPage = new LoginPage();
+        loginPage.inputLogin("dima");
+        loginPage.inputPassword("12345");
+        loginPage.clickSubmitButton();
+        mainPage.getSpendingTable().clickCheckBoxByDescription(spendJson.description());
+        mainPage.clickDeleteSpending();
+        mainPage.getSpendingTable().checkSizeTable(0);
     }
 }
