@@ -10,12 +10,12 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.po.LoginPage;
 import guru.qa.niffler.po.MainPage;
+import guru.qa.niffler.po.WelcomePage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-@ExtendWith(SpendExtension.class)
-@ExtendWith(CategoryExtension.class)
+@ExtendWith({CategoryExtension.class, SpendExtension.class})
 public class SpendingTest {
 
     static {
@@ -38,15 +38,17 @@ public class SpendingTest {
     )
     @Test
     void spendingShouldBeDeletedAfterTableAction(SpendJson spendJson) {
-        Selenide.open("http://127.0.0.1:3000/");
+        WelcomePage welcomePage = new WelcomePage();
         MainPage mainPage = new MainPage();
-        mainPage.clickLoginButton();
         LoginPage loginPage = new LoginPage();
-        loginPage.inputLogin("dima");
-        loginPage.inputPassword("12345");
-        loginPage.clickSubmitButton();
-        mainPage.getSpendingTable().clickCheckBoxByDescription(spendJson.description());
-        mainPage.clickDeleteSpending();
+        Selenide.open("http://127.0.0.1:3000/");
+        welcomePage.clickLoginButton();
+        loginPage.setUserName("dima")
+                .setPassword("12345")
+                .clickSubmitButton();
+        mainPage.getSpendingTable()
+                .clickCheckBoxByDescription(spendJson.description())
+                .clickDeleteSpending();
         mainPage.getSpendingTable().checkSizeTable(0);
     }
 }
