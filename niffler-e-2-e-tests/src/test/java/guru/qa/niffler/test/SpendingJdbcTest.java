@@ -4,8 +4,8 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.jupiter.annotation.GenerateCategory;
 import guru.qa.niffler.jupiter.annotation.GenerateSpend;
-import guru.qa.niffler.jupiter.extension.CategoryExtension;
-import guru.qa.niffler.jupiter.extension.SpendExtension;
+import guru.qa.niffler.jupiter.extension.CategoryJdbcExtension;
+import guru.qa.niffler.jupiter.extension.SpendJdbcExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.po.LoginPage;
@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-@ExtendWith({CategoryExtension.class, SpendExtension.class})
-public class SpendingTest {
+@ExtendWith({CategoryJdbcExtension.class, SpendJdbcExtension.class})
+public class SpendingJdbcTest {
 
     static {
         ChromeOptions options = new ChromeOptions();
