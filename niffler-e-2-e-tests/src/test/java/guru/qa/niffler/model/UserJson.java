@@ -3,6 +3,7 @@ package guru.qa.niffler.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import guru.qa.niffler.jupiter.annotation.User;
 
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public record UserJson(
         @JsonIgnore
         TestData testData) {
 
-    public static UserJson simpleUser(String username, String password) {
+    public static UserJson simpleUser(String username, String password, User.UserType userType) {
         return new UserJson(
                 null,
                 username,
@@ -38,7 +39,8 @@ public record UserJson(
                 null,
                 null,
                 new TestData(
-                        password
+                        password,
+                        userType
                 )
         );
     }
