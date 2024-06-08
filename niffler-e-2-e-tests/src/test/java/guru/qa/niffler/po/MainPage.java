@@ -15,4 +15,8 @@ public class MainPage {
     public Header header() {
         return header;
     }
+
+    public void clickAvatar() {
+        header().clickProfileButton();
+    }
 }
