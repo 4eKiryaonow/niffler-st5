@@ -1,25 +1,14 @@
 package guru.qa.niffler.data.repository;
 
-import guru.qa.niffler.data.DataBaseConnection;
 import guru.qa.niffler.data.DataSourceProvider;
-import guru.qa.niffler.data.constants.query.QueryTableCategory;
-import guru.qa.niffler.data.constants.query.QueryTableSpend;
 import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.data.entity.SpendEntity;
 
 import javax.sql.DataSource;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.UUID;
 
 import static guru.qa.niffler.data.DataBase.SPEND;
-import static guru.qa.niffler.data.constants.TableNames.CATEGORY_TABLE;
-import static guru.qa.niffler.data.constants.TableNames.SPEND_TABLE;
-import static guru.qa.niffler.data.constants.query.CommonQuery.DELETE;
-import static guru.qa.niffler.data.constants.query.QueryTableCategory.INSERT;
-import static guru.qa.niffler.data.constants.query.QueryTableCategory.UPDATE;
 
 public class CategorySpendRepositoryImpl implements CategorySpendRepository {
 
@@ -27,70 +16,67 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
 
     @Override
     public CategoryEntity createCategory(CategoryEntity categoryEntity) {
-        String query = String.format(INSERT, CATEGORY_TABLE);
-        PreparedStatement preparedStatement = DataBaseConnection.prepareStatement(categorySpendDataSource, query);
-        try {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "INSERT INTO category (category, username) values (?,?)",
+                     PreparedStatement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, categoryEntity.getCategory());
             preparedStatement.setString(2, categoryEntity.getUsername());
             preparedStatement.executeUpdate();
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
-            if (resultSet.next()) {
-                categoryEntity.setId(UUID.fromString(resultSet.getString("id")));
-                return categoryEntity;
-            } else throw new RuntimeException();
-
-
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    categoryEntity.setId(UUID.fromString(resultSet.getString("id")));
+                    return categoryEntity;
+                } else throw new IllegalStateException("Can't get id");
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            DataBaseConnection.closeStatement(preparedStatement);
         }
     }
 
     @Override
     public CategoryEntity editCategory(CategoryEntity categoryEntity) {
-        String query = String.format(UPDATE, CATEGORY_TABLE);
-        PreparedStatement preparedStatement = DataBaseConnection.prepareStatement(categorySpendDataSource, query);
-        try {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE category SET category=?, username=? WHERE id = ?"
+             )) {
             preparedStatement.setString(1, categoryEntity.getCategory());
             preparedStatement.setString(2, categoryEntity.getUsername());
             preparedStatement.setObject(3, categoryEntity.getId());
             preparedStatement.executeUpdate();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            DataBaseConnection.closeStatement(preparedStatement);
         }
         return categoryEntity;
     }
 
     @Override
     public void removeCategory(CategoryEntity categoryEntity) {
-        String query = String.format(DELETE, CATEGORY_TABLE);
-        PreparedStatement preparedStatement = DataBaseConnection.prepareStatement(categorySpendDataSource, query);
-        try {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM category WHERE id = ?"
+             )) {
             preparedStatement.setObject(1, categoryEntity.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            DataBaseConnection.closeStatement(preparedStatement);
         }
     }
 
     @Override
     public SpendEntity createSpend(SpendEntity spendEntity) {
-        String query = String.format(QueryTableSpend.INSERT, SPEND_TABLE);
-        PreparedStatement preparedStatement = DataBaseConnection.prepareStatement(categorySpendDataSource, query);
-        try {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "INSERT INTO spend (username, spend_date, currency, amount, description, category_id) VALUES(?, ?, ?, ?, ?, ?)",
+                     PreparedStatement.RETURN_GENERATED_KEYS
+             )) {
             preparedStatement.setString(1, spendEntity.getUsername());
             preparedStatement.setDate(2, new Date(spendEntity.getSpendDate().getTime()));
             preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
             preparedStatement.setDouble(4, spendEntity.getAmount());
             preparedStatement.setString(5, spendEntity.getDescription());
-            preparedStatement.setObject(6, spendEntity.getCategory());
+            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory()).getId());
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -99,17 +85,16 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            DataBaseConnection.closeStatement(preparedStatement);
         }
         return spendEntity;
     }
 
     @Override
     public SpendEntity editSpend(SpendEntity spendEntity) {
-        String query = String.format(QueryTableSpend.UPDATE, SPEND_TABLE);
-        PreparedStatement preparedStatement = DataBaseConnection.prepareStatement(categorySpendDataSource, query);
-        try {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE spend SET username=?, spend_date=?, currency=?, amount=?, description=?, category_id=? WHERE id=?"
+             )) {
             preparedStatement.setString(1, spendEntity.getUsername());
             preparedStatement.setDate(2, new Date(spendEntity.getSpendDate().getTime()));
             preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
@@ -125,9 +110,10 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
 
     @Override
     public void removeSpend(SpendEntity spendEntity) {
-        String query = String.format(DELETE, SPEND_TABLE);
-        PreparedStatement preparedStatement = DataBaseConnection.prepareStatement(categorySpendDataSource, query);
-        try {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM spend WHERE id = ?"
+             )) {
             preparedStatement.setObject(1, spendEntity.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -135,9 +121,10 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
     }
 
     public CategoryEntity getCategoryByName(String category) {
-        String query = String.format(QueryTableCategory.SELECT_BY_NAME, CATEGORY_TABLE);
-        PreparedStatement preparedStatement = DataBaseConnection.prepareStatement(categorySpendDataSource, query);
-        try {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT * FROM category WHERE category = ?"
+             )) {
             preparedStatement.setString(1, category);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -145,8 +132,7 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
                 categoryEntity.setId(UUID.fromString(resultSet.getString("id")));
                 categoryEntity.setCategory(resultSet.getString("category"));
                 categoryEntity.setUsername(resultSet.getString("username"));
-                return new CategoryEntity(
-                );
+                return categoryEntity;
             } else {
                 throw new RuntimeException();
             }

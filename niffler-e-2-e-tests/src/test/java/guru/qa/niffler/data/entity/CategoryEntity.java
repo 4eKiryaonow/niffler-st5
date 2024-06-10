@@ -17,7 +17,7 @@ public class CategoryEntity implements Serializable {
 
     public static CategoryEntity fromJson(CategoryJson categoryJson) {
         CategoryEntity categoryEntity = new CategoryEntity();
-        categoryEntity.setId(categoryEntity.getId());
+        categoryEntity.setId(categoryJson.id());
         categoryEntity.setCategory(categoryJson.category());
         categoryEntity.setUsername(categoryJson.username());
         return categoryEntity;

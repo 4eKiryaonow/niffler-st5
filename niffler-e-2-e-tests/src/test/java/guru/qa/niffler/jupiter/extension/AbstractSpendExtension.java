@@ -10,7 +10,7 @@ public abstract class AbstractSpendExtension implements BeforeEachCallback, Afte
     public static final ExtensionContext.Namespace NAMESPACE
             = ExtensionContext.Namespace.create(AbstractSpendExtension.class);
 
-    protected abstract SpendJson createSpend(ExtensionContext extensionContext, GenerateSpend spend);
+    protected abstract SpendJson createSpend(GenerateSpend spend);
 
     protected abstract void removeSpend(SpendJson spend);
 
@@ -22,7 +22,7 @@ public abstract class AbstractSpendExtension implements BeforeEachCallback, Afte
         ).ifPresent(
                 spend -> extensionContext
                         .getStore(NAMESPACE)
-                        .put(extensionContext.getUniqueId(), createSpend(extensionContext, spend))
+                        .put(extensionContext.getUniqueId(), createSpend(spend))
         );
     }
 

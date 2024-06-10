@@ -4,7 +4,6 @@ import guru.qa.niffler.api.SpendApi;
 import guru.qa.niffler.jupiter.annotation.GenerateSpend;
 import guru.qa.niffler.model.SpendJson;
 import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -23,7 +22,7 @@ public class SpendHttpExtension extends AbstractSpendExtension {
             .build();
 
     @Override
-    protected SpendJson createSpend(ExtensionContext extensionContext, GenerateSpend spend) {
+    protected SpendJson createSpend(GenerateSpend spend) {
         SpendApi spendApi = retrofit.create(SpendApi.class);
         SpendJson spendJson = new SpendJson(
                 null,
