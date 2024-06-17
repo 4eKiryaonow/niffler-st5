@@ -121,4 +121,12 @@ public class CategorySpendRepositoryImplSpringJdbc implements CategorySpendRepos
                 SpendEntityRowMapper.instance, username
         );
     }
+
+    @Override
+    public CategoryEntity findCategory(String category, String username) {
+        return jdbcTemplate.queryForObject(
+                "SELECT * FROM category WHERE category = ? AND user = ?",
+                CategoryEntityRowMapper.instance, category, username
+        );
+    }
 }

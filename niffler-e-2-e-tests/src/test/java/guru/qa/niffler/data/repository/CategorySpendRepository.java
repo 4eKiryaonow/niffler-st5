@@ -19,4 +19,5 @@ public interface CategorySpendRepository {
 
     void removeSpend(SpendEntity spendEntity);
     List<SpendEntity> findAllByUsername(String username);
+    CategoryEntity findCategory(String category, String username);
 }
