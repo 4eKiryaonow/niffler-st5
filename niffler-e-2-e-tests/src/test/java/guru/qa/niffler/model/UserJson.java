@@ -3,6 +3,7 @@ package guru.qa.niffler.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.javafaker.Faker;
 import guru.qa.niffler.jupiter.annotation.User;
 
 import java.util.UUID;
@@ -41,6 +42,24 @@ public record UserJson(
                 new TestData(
                         password,
                         userType
+                )
+        );
+    }
+
+    public static UserJson getRandomUser() {
+        Faker faker = new Faker();
+        return new UserJson(
+                null,
+                faker.name().username(),
+                faker.name().firstName(),
+                faker.name().lastName(),
+                CurrencyValues.RUB,
+                null,
+                null,
+                null,
+                new TestData(
+                        faker.internet().password(),
+                        null
                 )
         );
     }

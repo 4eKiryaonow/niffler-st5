@@ -26,7 +26,7 @@ public record SpendJson(
                  return new SpendJson(
                          spendEntity.getId(),
                          spendEntity.getSpendDate(),
-                         spendEntity.getCategory(),
+                         spendEntity.getCategory().getCategory(),
                          spendEntity.getCurrency(),
                          spendEntity.getAmount(),
                          spendEntity.getDescription(),

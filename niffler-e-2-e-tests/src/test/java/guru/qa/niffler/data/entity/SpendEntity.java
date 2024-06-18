@@ -18,7 +18,7 @@ public class SpendEntity implements Serializable {
     private Date spendDate;
     private Double amount;
     private String description;
-    private String category;
+    private CategoryEntity category;
 
     public static SpendEntity fromJson(SpendJson spendJson) {
         SpendEntity spendEntity = new SpendEntity();
@@ -28,7 +28,7 @@ public class SpendEntity implements Serializable {
         spendEntity.setSpendDate(spendJson.spendDate());
         spendEntity.setAmount(spendJson.amount());
         spendEntity.setDescription(spendJson.description());
-        spendEntity.setCategory(spendJson.category());
+        spendEntity.setCategory(new CategoryEntity(null, spendJson.category(), spendJson.username() ));
         return spendEntity;
     }
 }

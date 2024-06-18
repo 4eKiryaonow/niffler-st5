@@ -3,9 +3,12 @@ package guru.qa.niffler.data.repository;
 import guru.qa.niffler.data.DataSourceProvider;
 import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.data.entity.SpendEntity;
+import guru.qa.niffler.model.CurrencyValues;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static guru.qa.niffler.data.DataBase.SPEND;
@@ -76,7 +79,7 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
             preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
             preparedStatement.setDouble(4, spendEntity.getAmount());
             preparedStatement.setString(5, spendEntity.getDescription());
-            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory()).getId());
+            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory().getCategory()).getId());
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -100,7 +103,7 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
             preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
             preparedStatement.setDouble(4, spendEntity.getAmount());
             preparedStatement.setString(5, spendEntity.getDescription());
-            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory()).getId());
+            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory().getCategory()).getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -139,5 +142,32 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    @Override
+    public List<SpendEntity> findAllByUsername(String username) {
+        List<SpendEntity> spendEntityList = new ArrayList<>();
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT * FROM spend WHERE username = ?"
+             )) {
+            preparedStatement.setString(1, username);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                SpendEntity spendEntity = new SpendEntity();
+                spendEntity.setId((UUID) rs.getObject("id"));
+                spendEntity.setUsername(rs.getString("username"));
+                spendEntity.setSpendDate(rs.getDate("spend_date"));
+                spendEntity.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+                spendEntity.setAmount(rs.getDouble("amount"));
+                spendEntity.setDescription(rs.getString("description"));
+                spendEntity.setCategory(new CategoryEntity(null, rs.getString("category"),rs.getString("username")));
+                spendEntityList.add(spendEntity);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return spendEntityList;
     }
 }
