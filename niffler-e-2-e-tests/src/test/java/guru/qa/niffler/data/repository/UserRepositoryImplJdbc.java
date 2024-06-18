@@ -1,7 +1,7 @@
 package guru.qa.niffler.data.repository;
 
 import guru.qa.niffler.data.DataSourceProvider;
-import guru.qa.niffler.data.entity.Authority;
+import guru.qa.niffler.data.entity.AuthorityEntity;
 import guru.qa.niffler.data.entity.UserAuthEntity;
 import guru.qa.niffler.data.entity.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
@@ -47,9 +47,9 @@ public class UserRepositoryImplJdbc implements UserRepository {
                         userAuth.setId(UUID.fromString(resultSet.getString("id")));
                     } else throw new IllegalStateException("Can't get id");
 
-                    for (Authority a : Authority.values()) {
+                    for (AuthorityEntity a : userAuth.getAuthorityEntities()) {
                         psAuthority.setObject(1, userAuth.getId());
-                        psAuthority.setString(2, a.name());
+                        psAuthority.setString(2, a.getAuthority().name());
                         psAuthority.addBatch();
                         psAuthority.clearParameters();
                     }
@@ -92,9 +92,9 @@ public class UserRepositoryImplJdbc implements UserRepository {
                 psDeleteAuthority.setObject(1, userAuth.getId());
                 psDeleteAuthority.executeUpdate();
 
-                for (Authority a : Authority.values()) {
+                for (AuthorityEntity a : userAuth.getAuthorityEntities()) {
                     psAuthority.setObject(1, userAuth.getId());
-                    psAuthority.setString(2, a.name());
+                    psAuthority.setString(2, a.getAuthority().name());
                     psAuthority.addBatch();
                     psAuthority.clearParameters();
                 }

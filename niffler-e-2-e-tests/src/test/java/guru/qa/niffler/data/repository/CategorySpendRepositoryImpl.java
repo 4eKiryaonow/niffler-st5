@@ -79,7 +79,7 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
             preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
             preparedStatement.setDouble(4, spendEntity.getAmount());
             preparedStatement.setString(5, spendEntity.getDescription());
-            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory()).getId());
+            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory().getCategory()).getId());
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -103,7 +103,7 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
             preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
             preparedStatement.setDouble(4, spendEntity.getAmount());
             preparedStatement.setString(5, spendEntity.getDescription());
-            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory()).getId());
+            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory().getCategory()).getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -162,7 +162,7 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
                 spendEntity.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                 spendEntity.setAmount(rs.getDouble("amount"));
                 spendEntity.setDescription(rs.getString("description"));
-                spendEntity.setCategory(rs.getString("category"));
+                spendEntity.setCategory(new CategoryEntity(null, rs.getString("category"),rs.getString("username")));
                 spendEntityList.add(spendEntity);
             }
         } catch (SQLException e) {

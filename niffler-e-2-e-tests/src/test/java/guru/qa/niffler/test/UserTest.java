@@ -35,6 +35,6 @@ public class UserTest {
                 .setPassword(user.testData().password())
                 .clickSubmitButton();
         mainPage.clickAvatar();
-        profilePage.checkUserProfile(user.username(), user.firstname(), user.surname());
+        profilePage.checkUserProfile(user);
     }
 }

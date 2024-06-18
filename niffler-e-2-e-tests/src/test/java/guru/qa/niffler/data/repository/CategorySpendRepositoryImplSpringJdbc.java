@@ -71,7 +71,7 @@ public class CategorySpendRepositoryImplSpringJdbc implements CategorySpendRepos
                     preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
                     preparedStatement.setDouble(4, spendEntity.getAmount());
                     preparedStatement.setString(5, spendEntity.getDescription());
-                    preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory()).get().getId());
+                    preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory().getCategory()).get().getId());
                     return preparedStatement;
                 }, keyHolder
         );
@@ -89,7 +89,7 @@ public class CategorySpendRepositoryImplSpringJdbc implements CategorySpendRepos
                 String.valueOf(spendEntity.getCurrency()),
                 spendEntity.getAmount(),
                 spendEntity.getDescription(),
-                getCategoryByName(spendEntity.getCategory())
+                getCategoryByName(spendEntity.getCategory().getCategory())
         );
         return spendEntity;
     }
