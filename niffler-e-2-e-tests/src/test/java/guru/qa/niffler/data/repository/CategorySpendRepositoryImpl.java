@@ -103,7 +103,7 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
             preparedStatement.setString(3, String.valueOf(spendEntity.getCurrency()));
             preparedStatement.setDouble(4, spendEntity.getAmount());
             preparedStatement.setString(5, spendEntity.getDescription());
-            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory().getCategory()).getId());
+            preparedStatement.setObject(6, getCategoryByName(spendEntity.getCategory().getCategory()));
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -162,12 +162,35 @@ public class CategorySpendRepositoryImpl implements CategorySpendRepository {
                 spendEntity.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                 spendEntity.setAmount(rs.getDouble("amount"));
                 spendEntity.setDescription(rs.getString("description"));
-                spendEntity.setCategory(new CategoryEntity(null, rs.getString("category"),rs.getString("username")));
+                spendEntity.setCategory(new CategoryEntity(UUID.fromString(rs.getString("category")), null, spendEntity.getUsername()));
                 spendEntityList.add(spendEntity);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return spendEntityList;
+    }
+
+    @Override
+    public CategoryEntity findCategory(String category, String username) {
+        try (Connection connection = categorySpendDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT * FROM category WHERE category = ? and username = ?"
+             )) {
+            preparedStatement.setString(1, category);
+            preparedStatement.setString(2, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                CategoryEntity categoryEntity = new CategoryEntity();
+                categoryEntity.setId(UUID.fromString(resultSet.getString("id")));
+                categoryEntity.setCategory(resultSet.getString("category"));
+                categoryEntity.setUsername(resultSet.getString("username"));
+                return categoryEntity;
+            } else {
+                throw new RuntimeException();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

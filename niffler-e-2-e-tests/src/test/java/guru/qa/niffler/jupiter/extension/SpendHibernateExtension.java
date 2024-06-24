@@ -2,15 +2,15 @@ package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.data.entity.SpendEntity;
-import guru.qa.niffler.data.repository.CategorySpendRepositoryImpl;
+import guru.qa.niffler.data.repository.CategorySpendRepositoryHibernate;
 import guru.qa.niffler.jupiter.annotation.GenerateSpend;
 import guru.qa.niffler.model.SpendJson;
 
 import java.util.Date;
 
-public class SpendJdbcExtension extends AbstractSpendExtension {
-
-    private final CategorySpendRepositoryImpl spendImpl = new CategorySpendRepositoryImpl();
+public class SpendHibernateExtension extends AbstractSpendExtension {
+    private final CategorySpendRepositoryHibernate categorySpendRepositoryHibernate =
+            new CategorySpendRepositoryHibernate();
 
     @Override
     protected SpendJson createSpend(GenerateSpend spend) {
@@ -21,11 +21,11 @@ public class SpendJdbcExtension extends AbstractSpendExtension {
         spendEntity.setAmount(spend.amount());
         spendEntity.setDescription(spend.description());
         spendEntity.setUsername(spend.username());
-        return SpendJson.fromEntity(spendImpl.createSpend(spendEntity));
+        return SpendJson.fromEntity(categorySpendRepositoryHibernate.createSpend(spendEntity));
     }
 
     @Override
     protected void removeSpend(SpendJson spend) {
-        spendImpl.removeSpend(SpendEntity.fromJson(spend));
+        categorySpendRepositoryHibernate.removeSpend(SpendEntity.fromJson(spend));
     }
 }

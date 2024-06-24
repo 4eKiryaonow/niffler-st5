@@ -183,4 +183,14 @@ public class UserRepositoryImplJdbc implements UserRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public UserAuthEntity findUserInAuth(String username) {
+        return null;
+    }
+
+    @Override
+    public UserEntity findUserInUserData(String username) {
+        return null;
+    }
 }
