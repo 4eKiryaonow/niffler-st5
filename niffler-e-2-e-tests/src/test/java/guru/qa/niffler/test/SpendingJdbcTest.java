@@ -1,6 +1,5 @@
 package guru.qa.niffler.test;
 
-import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.jupiter.annotation.GenerateCategory;
 import guru.qa.niffler.jupiter.annotation.GenerateSpend;
@@ -13,16 +12,9 @@ import guru.qa.niffler.po.MainPage;
 import guru.qa.niffler.po.WelcomePage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 @ExtendWith({CategoryJdbcExtension.class, SpendJdbcExtension.class})
-public class SpendingJdbcTest {
-
-    static {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--incognito", "start-maximized");
-        Configuration.browserCapabilities = options;
-    }
+public class SpendingJdbcTest extends BaseTest {
 
     @GenerateCategory(
             username = "dima",
@@ -41,7 +33,7 @@ public class SpendingJdbcTest {
         WelcomePage welcomePage = new WelcomePage();
         MainPage mainPage = new MainPage();
         LoginPage loginPage = new LoginPage();
-        Selenide.open("http://127.0.0.1:3000/");
+        Selenide.open(CFG.frontUrl());
         welcomePage.clickLoginButton();
         loginPage.setUserName("dima")
                 .setPassword("12345")

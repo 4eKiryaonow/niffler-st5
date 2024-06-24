@@ -8,7 +8,9 @@ import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Selectors.byName;
 import static com.codeborne.selenide.Selenide.$;
 
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
+
+    public static final String URL = CFG.frontUrl() + "profile";
 
     private final SelenideElement avatar = $(".avatar-container");
     private final SelenideElement inputNameField = $(byName("firstname"));

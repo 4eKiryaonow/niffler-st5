@@ -1,6 +1,5 @@
 package guru.qa.niffler.test;
 
-import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.UserQueueExtension;
@@ -8,18 +7,11 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.po.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 import static guru.qa.niffler.jupiter.annotation.User.UserType.*;
 
 @ExtendWith(UserQueueExtension.class)
-public class UsersFriendshipStatementTest {
-
-    static {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--incognito", "start-maximized");
-        Configuration.browserCapabilities = options;
-    }
+public class UsersFriendshipStatementTest extends BaseTest {
 
     WelcomePage welcomePage = new WelcomePage();
     MainPage mainPage = new MainPage();
@@ -28,8 +20,8 @@ public class UsersFriendshipStatementTest {
     PeoplePage peoplePage = new PeoplePage();
 
     @Test
-    void userHasFriend(@User(WITH_FRIENDS)UserJson user1, @User(WITH_FRIENDS) UserJson anotherUser) {
-        Selenide.open("http://127.0.0.1:3000/");
+    void userHasFriend(@User(WITH_FRIENDS) UserJson user1, @User(WITH_FRIENDS) UserJson anotherUser) {
+        Selenide.open(CFG.frontUrl());
         welcomePage.clickLoginButton();
         loginPage.setUserName(user1.username())
                 .setPassword(user1.testData().password())
