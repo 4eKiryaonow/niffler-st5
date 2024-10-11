@@ -56,12 +56,12 @@ public class UserRepositoryImplSpringJdbc implements UserRepository {
                         @Override
                         public void setValues(PreparedStatement ps, int i) throws SQLException {
                             ps.setObject(1, userAuth.getId());
-                            ps.setString(2, userAuth.getAuthorityEntities().get(i).getAuthority().name());
+                            ps.setString(2, userAuth.getAuthorities().get(i).getAuthority().name());
                         }
 
                         @Override
                         public int getBatchSize() {
-                            return userAuth.getAuthorityEntities().size();
+                            return userAuth.getAuthorities().size();
                         }
                     });
             return userAuth;
@@ -94,12 +94,12 @@ public class UserRepositoryImplSpringJdbc implements UserRepository {
                         @Override
                         public void setValues(PreparedStatement ps, int i) throws SQLException {
                             ps.setObject(1, userAuth.getId());
-                            ps.setString(2, userAuth.getAuthorityEntities().get(i).getAuthority().name());
+                            ps.setString(2, userAuth.getAuthorities().get(i).getAuthority().name());
                         }
 
                         @Override
                         public int getBatchSize() {
-                            return userAuth.getAuthorityEntities().size();
+                            return userAuth.getAuthorities().size();
                         }
                     });
             return userAuth;

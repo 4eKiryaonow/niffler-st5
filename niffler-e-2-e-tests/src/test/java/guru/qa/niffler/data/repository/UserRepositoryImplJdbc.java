@@ -47,7 +47,7 @@ public class UserRepositoryImplJdbc implements UserRepository {
                         userAuth.setId(UUID.fromString(resultSet.getString("id")));
                     } else throw new IllegalStateException("Can't get id");
 
-                    for (AuthorityEntity a : userAuth.getAuthorityEntities()) {
+                    for (AuthorityEntity a : userAuth.getAuthorities()) {
                         psAuthority.setObject(1, userAuth.getId());
                         psAuthority.setString(2, a.getAuthority().name());
                         psAuthority.addBatch();
@@ -92,7 +92,7 @@ public class UserRepositoryImplJdbc implements UserRepository {
                 psDeleteAuthority.setObject(1, userAuth.getId());
                 psDeleteAuthority.executeUpdate();
 
-                for (AuthorityEntity a : userAuth.getAuthorityEntities()) {
+                for (AuthorityEntity a : userAuth.getAuthorities()) {
                     psAuthority.setObject(1, userAuth.getId());
                     psAuthority.setString(2, a.getAuthority().name());
                     psAuthority.addBatch();
