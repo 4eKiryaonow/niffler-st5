@@ -68,6 +68,6 @@ public abstract class AbstractSpendExtension implements BeforeEachCallback, Afte
                 .getParameter()
                 .getType();
         List<SpendJson> createdSpends = extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class);
-        return type.isAssignableFrom(SpendJson.class) ? createdSpends.getFirst() : createdSpends.toArray();
+        return type.isAssignableFrom(SpendJson.class) ? createdSpends.getFirst() : createdSpends.toArray(SpendJson[]::new);
     }
 }

@@ -76,7 +76,6 @@ public class UserQueueExtension implements
 
         for (User.UserType userType : usersFromTest.keySet()) {
             usersFromTest.get(userType).forEach(userJson -> USERS.get(userType).add(userJson));
-            System.out.println(USERS);
         }
 
     }
